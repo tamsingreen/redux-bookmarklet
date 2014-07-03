@@ -23,26 +23,47 @@ describe("Take Me To Redux", function() {
   // describe(function() {});
 });
 
-describe("When createReduxLink is called", function() {
+describe("When goToRedux is called", function() {
   beforeEach(function() {
     jasmine.Ajax.install();
-  });
+    spyOn(window, 'openReduxLink');
+    // spyOn(window, 'alert');
 
-  it('should redirect to the related redux page', function () {
-    spyOn(window, 'open');
-    goToRedux('http://www.bbc.co.uk/programmes/b015p86jwin');
-
-    expect(jasmine.Ajax.requests.mostRecent().url).toBe('/some/cool/url');
-
-    expect(window.open).toHaveBeenCalled();
+    goToRedux('/some/cool/url');
   });
 
   afterEach(function() {
     jasmine.Ajax.uninstall();
   });
 
+  it('should fetch programme data from the correct URL', function () {
+    var ajaxRequest = jasmine.Ajax.requests.mostRecent();
+    expect(ajaxRequest.url).toBe('/some/cool/url.json');
+  });
 
+  it('should redirect to the correct programme page', function () {
+    var ajaxRequest = jasmine.Ajax.requests.mostRecent();
+    ajaxRequest.response({
+        status: 200,
+        responseText: JSON.stringify({
+            programme: {
+                type: 'episode',
+                display_title: 'Title',
+                first_broadcast_date: '2011-10-12T15:30:00+01:00',
+                ownership: {
+                    service: {
+                        id: 'id'
+                    }
+                }
+            }
+        })
+    });
+    expect(window.openReduxLink).toHaveBeenCalledWith(
+        'https://g.bbcredux.com/programme/undefined/2011-10-12/14-30-00'
+    );
+  });
 });
+
 /*What should this test?
 - ISO date in GMT - done
 -ISO date in BST - done
