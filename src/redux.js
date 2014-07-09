@@ -20,8 +20,7 @@ function goToRedux(path) {
 }
 
 function openReduxLink(link) {
-	// window.open(link, '_self');
-	console.log(link);
+	window.open(link, '_self');
 }
 
 function getTXDetails(path) {
