@@ -4,19 +4,32 @@ function goToRedux(path) {
 	
 	txData.done(function(response) {
 		if (response.programme.type === 'episode') {
-			var title = response.programme.display_title.title;
-	    	var date = response.programme.first_broadcast_date;
-		    var channel = response.programme.ownership.service.id;   
-		    var reduxURL = convertToRedux1Link(date,channel);
+	    var date = response.programme.first_broadcast_date;
+		  var channel = response.programme.ownership.service.id;   
+		  var reduxURL = convertToRedux1Link(date, channel);
 			openReduxLink(reduxURL);
-	    } else {
-	    	alert("This is not a valid bbc.co.uk/programmes URL");
-	    }
+    } else {
+	    displayErrorMessage(
+        'This looks like a ' + response.programme.type + ' page URL - please supply an episode page URL'
+      );
+    }
 	});
 	
 	txData.fail(function() {
-		alert("Failed to retrieve tx details");
+		displayErrorMessage(
+      'Failed to retrieve programme information - have you entered a bbc.co.uk/programmes URL?'
+    );
 	});
+}
+
+function displayErrorMessage(message) {
+  var errorDiv = $('#url-error')
+  errorDiv.attr({
+    class: 'alert alert-danger',
+    role: 'alert',
+    display: 'inline-block'
+  });
+  errorDiv.html(message);
 }
 
 function openReduxLink(link) {

@@ -20,15 +20,12 @@ describe("Take Me To Redux", function() {
     });
   });
 
-  // describe(function() {});
 });
 
 describe("When goToRedux is called", function() {
   beforeEach(function() {
     jasmine.Ajax.install();
     spyOn(window, 'openReduxLink');
-    // spyOn(window, 'alert');
-
     goToRedux('/some/cool/url');
   });
 
@@ -62,11 +59,52 @@ describe("When goToRedux is called", function() {
         'https://g.bbcredux.com/programme/undefined/2011-10-12/14-30-00'
     );
   });
+
+  it("displays an appropriate error message when a non episode URL is supplied", function() {
+    spyOn(window, 'displayErrorMessage');
+    var ajaxRequest = jasmine.Ajax.requests.mostRecent();
+    ajaxRequest.response({
+        status: 200,
+        responseText: JSON.stringify({
+            programme: {
+                type: 'brand',
+                display_title: 'Title',
+                first_broadcast_date: '2011-10-12T15:30:00+01:00',
+                ownership: {
+                    service: {
+                        id: 'id'
+                    }
+                }
+            }
+        })
+    });
+    expect(window.displayErrorMessage).toHaveBeenCalledWith(
+      'This looks like a brand page URL - please supply an episode page URL'
+    );
+  });
+
+  it("displays an appropriate error message when the AJAX call fails or a non /programmes URL is supplied", function() {
+    spyOn(window, 'displayErrorMessage');
+    var ajaxRequest = jasmine.Ajax.requests.mostRecent();
+    ajaxRequest.response({
+        status: 500,
+        responseText: JSON.stringify({
+            programme: {
+                type: 'brand',
+                display_title: 'Title',
+                first_broadcast_date: '2011-10-12T15:30:00+01:00',
+                ownership: {
+                    service: {
+                        id: 'id'
+                    }
+                }
+            }
+        })
+    });
+    expect(window.displayErrorMessage).toHaveBeenCalledWith(
+      'Failed to retrieve programme information - have you entered a bbc.co.uk/programmes URL?'
+    );
+  });
+
 });
 
-/*What should this test?
-- ISO date in GMT - done
--ISO date in BST - done
-- check non ISO date input returns something friendly (test redux as to what a friendly output could be eg calender for that channel)
-- ditto a null
-*/
