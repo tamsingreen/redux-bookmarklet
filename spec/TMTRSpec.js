@@ -1,32 +1,30 @@
 describe("Take Me To Redux", function() {
 
   describe("Convert Date and Time", function() {
-    it("Converts a ISO 8601 BST formatted date and time to a Redux-friendly version", function() {
-      var result = convertDateAndTime('2012-08-22T20:45:00+01:00');
-      expect(result).toEqual('2012-08-22/19-45-00');
-    });
-  });
-  describe("Convert Date and Time", function() {
+      it("Converts a ISO 8601 BST formatted date and time to a Redux-friendly version", function() {
+        var result = TMTR.convertDateAndTime('2012-08-22T20:45:00+01:00');
+        expect(result).toEqual('2012-08-22/19-45-00');
+      });
+
     it("Converts a ISO 8601 GMT formatted date and time to a Redux-friendly version", function() {
-      var result = convertDateAndTime('2012-11-22T20:45:00Z');
+      var result = TMTR.convertDateAndTime('2012-11-22T20:45:00Z');
       expect(result).toEqual('2012-11-22/20-45-00');
     });
-  });
 
-  describe("Create Redux 1 link", function() {
     it("Converts a date and channel as supplied by the /programmes API to the equivalent Redux 1 URL", function() {
-      var result = convertToRedux1Link("2011-10-11T15:30:00+01:00","bbc_radio_four");
+      var result = TMTR.convertToRedux1Link("2011-10-11T15:30:00+01:00","bbc_radio_four");
       expect(result).toEqual("https://g.bbcredux.com/programme/bbcr4/2011-10-11/14-30-00");
     });
-  });
 
+  });
+  
 });
 
 describe("When goToRedux is called", function() {
   beforeEach(function() {
     jasmine.Ajax.install();
     spyOn(window, 'openReduxLink');
-    goToRedux('/some/cool/url');
+    TMTR.goToRedux('/some/cool/url');
   });
 
   afterEach(function() {
@@ -40,6 +38,7 @@ describe("When goToRedux is called", function() {
 
   it('should redirect to the correct programme page', function () {
     var ajaxRequest = jasmine.Ajax.requests.mostRecent();
+    //create a stub with the minimum amount of info needed to pass
     ajaxRequest.response({
         status: 200,
         responseText: JSON.stringify({
@@ -84,7 +83,7 @@ describe("When goToRedux is called", function() {
   });
 
   it("displays an appropriate error message when the AJAX call fails or a non /programmes URL is supplied", function() {
-    spyOn(window, 'displayErrorMessage');
+    spyOn(window, 'TMTR.displayErrorMessage');
     var ajaxRequest = jasmine.Ajax.requests.mostRecent();
     ajaxRequest.response({
         status: 500,
@@ -101,7 +100,7 @@ describe("When goToRedux is called", function() {
             }
         })
     });
-    expect(window.displayErrorMessage).toHaveBeenCalledWith(
+    expect(window.TMTR.displayErrorMessage).toHaveBeenCalledWith(
       'Failed to retrieve programme information - have you entered a bbc.co.uk/programmes URL?'
     );
   });
